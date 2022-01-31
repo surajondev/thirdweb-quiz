@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import Header from './components/Header'
+import Main from './components/Main';
+import { useWeb3 } from "@3rdweb/hooks";
+import React,{useState, useEffect} from 'react';
+import { ThirdwebSDK } from "@3rdweb/sdk";
+import Question from './components/Question';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+  const { address, chainId, provider } = useWeb3();
+  const [module, setModule] = useState()
+
+  useEffect(async() => {
+    const tempProvider= provider.getSigner()
+    const sdk = new ThirdwebSDK(tempProvider);
+    const module = sdk.getBundleDropModule("0xa1bcD594EB36630142c28989C91Ba2bc3a4581cE");
+    setModule(module)
+    }, [provider])
+
+    if(module){
+      return(
+        <div className="App">
+        <Header />
+        <Main />
+        <Question address={address} module={module}/>
+        <div>
+        </div>
     </div>
-  );
+      )
+    }else{
+      return(
+        <div className="App">
+        <Header />
+        <Main />
+        <div>
+        </div>
+    </div>)
+    }
 }
 
 export default App;
